@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — Event Management System</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- ===== LOGIN OVERLAY ===== -->
+    <div id="loginOverlay">
+        <div class="login-box">
+            <div class="login-icon">🔐</div>
+            <h2>Admin Portal</h2>
+            <p class="login-subtitle">Enter your credentials to continue</p>
+            <input type="password" id="adminPassword" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')checkLogin()">
+            <button onclick="checkLogin()">Sign In</button>
+            <p id="loginError">⚠ Incorrect password. Try again.</p>
+        </div>
+    </div>
+
+    <!-- ===== ADMIN CONTENT ===== -->
+    <div id="adminContent">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h2>EMS Admin</h2>
+                <span>Control Panel</span>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a class="active" onclick="showPage('overview')"><span class="nav-icon">📊</span><span>Overview</span></a></li>
+                <li><a onclick="showPage('events')"><span class="nav-icon">🎪</span><span>Add Event</span></a></li>
+                <li><a onclick="showPage('bookings')"><span class="nav-icon">🎟</span><span>Bookings</span></a></li>
+                <li><a onclick="showPage('participants')"><span class="nav-icon">👤</span><span>Participants</span></a></li>
+                <li><a onclick="showPage('analytics')"><span class="nav-icon">📈</span><span>Analytics</span></a></li>
+                <li><a onclick="showPage('venues')"><span class="nav-icon">🏛</span><span>Venues</span></a></li>
+                <li><a onclick="showPage('bulk')"><span class="nav-icon">🎫</span><span>Bulk Tickets</span></a></li>
+                <li><a onclick="showPage('lookup')"><span class="nav-icon">🔍</span><span>Lookup</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="index.html">⬅ <span>Back to Website</span></a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- ===== PAGE 1: OVERVIEW / DASHBOARD ===== -->
+            <div class="admin-page active" id="page-overview">
+                <div class="top-bar">
+                    <h1>Dashboard Overview</h1>
+                    <div class="badge"><span class="dot"></span> Connected to Oracle DB</div>
+                </div>
+
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🎪</div>
+                        <div class="stat-value" id="statEvents">—</div>
+                        <div class="stat-label">Total Events</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎟</div>
+                        <div class="stat-value" id="statTickets">—</div>
+                        <div class="stat-label">Tickets Sold</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💼</div>
+                        <div class="stat-value" id="statSponsors">—</div>
+                        <div class="stat-label">Sponsors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👷</div>
+                        <div class="stat-value" id="statStaff">—</div>
+                        <div class="stat-label">Staff Members</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value" id="statParticipants">—</div>
+                        <div class="stat-label">Participants</div>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings Preview -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>Recent Bookings</h3>
+                        <span class="tag">Live Data</span>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Participant</th>
+                                <th>Event</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overviewBookingsBody">
+                            <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ===== PAGE 2: ADD EVENT ===== -->
+            <div class="admin-page" id="page-events">
+                <div class="top-bar">
+                    <h1>Create New Event</h1>
+                    <div class="badge">🎪 Event Management</div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>Event Details</h3>
+                        <span class="tag">Oracle INSERT</span>
+                    </div>
+                    <form id="addEventForm" class="admin-form">
+                        <div class="form-group">
+                            <label>Event Name</label>
+                            <input type="text" id="eventName" placeholder="e.g. Tech Summit 2025" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Event Type</label>
+                            <select id="eventType" required>
+                                <option value="">Select type</option>
+                                <option value="Conference">Conference</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Exhibition">Exhibition</option>
+                                <option value="Festival">Festival</option>
+                                <option value="Sports">Sports</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Event Date</label>
+                            <input type="date" id="eventDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Event Time</label>
+                            <input type="time" id="eventTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Budget (PKR)</label>
+                            <input type="number" id="eventBudget" placeholder="500000" required min="1000">
+                        </div>
+                        <div class="form-group">
+                            <label>Venue</label>
+                            <select id="eventVenue" required></select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Organizer</label>
+                            <select id="eventOrganizer" required></select>
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn-primary">🎪 Create Event</button>
+                        </div>
+                    </form>
+                    <div id="eventMessage" class="msg-toast"></div>
+                </div>
+            </div>
+
+            <!-- ===== PAGE 3: BOOKINGS ===== -->
+            <div class="admin-page" id="page-bookings">
+                <div class="top-bar">
+                    <h1>All Bookings</h1>
+                    <div class="badge">🎟 Ticket Bookings</div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>Booking Records</h3>
+                        <span class="tag">vw_ticket_bookings</span>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Participant</th>
+                                <th>Email</th>
+                                <th>Event</th>
+                                <th>Event Date</th>
+                                <th>Type</th>
+                                <th>Price</th>
+                                <th>Booking Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingsTableBody">
+                            <tr><td colspan="8" style="text-align:center; color:var(--text-muted);">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ===== PAGE 4: REGISTER PARTICIPANT ===== -->
+            <div class="admin-page" id="page-participants">
+                <div class="top-bar">
+                    <h1>Register Participant</h1>
+                    <div class="badge">👤 PL/SQL Procedure</div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>Participant Registration</h3>
+                        <span class="tag">procRegisterParticipant</span>
+                    </div>
+                    <form id="registerParticipantForm" class="admin-form">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="participantName" placeholder="e.g. Ali Hassan" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="participantGender" required>
+                                <option value="">Select Gender</option>
+                                <option value="M">Male (M)</option>
+                                <option value="F">Female (F)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="participantEmail" placeholder="ali@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="participantPhone" placeholder="03001234567" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Address</label>
+                            <input type="text" id="participantAddress" placeholder="House 5, Gulberg, Lahore" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn-primary">👤 Register Participant</button>
+                        </div>
+                    </form>
+                    <div id="participantMessage" class="msg-toast"></div>
+                </div>
+            </div>
+
+            <!-- ===== PAGE 5: EVENT ANALYTICS ===== -->
+            <div class="admin-page" id="page-analytics">
+                <div class="top-bar">
+                    <h1>Event Analytics</h1>
+                    <div class="badge">📈 PL/SQL Functions</div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>Revenue Analysis</h3>
+                        <span class="tag">fnCalculateTotalEventRevenue</span>
+                    </div>
+                    <div class="admin-form" style="margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label>Select Event</label>
+                            <select id="analyticsEventSelect">
+                                <option value="">Loading events...</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="justify-content:flex-end;">
+                            <button type="button" class="btn-primary" onclick="loadEventAnalytics()">📊 Load Analytics</button>
+                        </div>
+                    </div>
+
+                    <div id="analyticsContainer" style="display:none;">
+                        <h3 id="analyticsEventName" style="margin-bottom:16px; font-size:20px;"></h3>
+                        <div class="analytics-grid">
+                            <div class="analytics-item">
+                                <div class="metric-label">Budget</div>
+                                <div class="metric-value pink" id="eventBudgetDisplay">—</div>
+                            </div>
+                            <div class="analytics-item">
+                                <div class="metric-label">Total Revenue</div>
+                                <div class="metric-value green" id="eventRevenueDisplay">—</div>
+                            </div>
+                            <div class="analytics-item">
+                                <div class="metric-label">Profit</div>
+                                <div class="metric-value" id="eventProfitDisplay">—</div>
+                            </div>
+                            <div class="analytics-item">
+                                <div class="metric-label">Profit Margin</div>
+                                <div class="metric-value yellow" id="eventMarginDisplay">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PAGE 6: VENUE OCCUPANCY ===== -->
+            <div class="admin-page" id="page-venues">
+                <div class="top-bar">
+                    <h1>Venue Occupancy</h1>
+                    <div class="badge">🏛 PL/SQL Cursor</div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>Occupancy Report</h3>
+                        <span class="tag">Cursor-Based Query</span>
+                    </div>
+                    <div class="admin-form" style="margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label>Select Venue</label>
+                            <select id="venueSelect">
+                                <option value="">Loading venues...</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="justify-content:flex-end;">
+                            <button type="button" class="btn-primary" onclick="loadVenueOccupancy()">🏛 Generate Report</button>
+                        </div>
+                    </div>
+
+                    <div id="occupancyContainer" style="display:none;">
+                        <h3 id="venueNameDisplay" style="margin-bottom:4px;"></h3>
+                        <p id="venueDetailsDisplay" style="color:var(--text-muted); margin-bottom:16px; font-size:14px;"></p>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Event</th>
+                                    <th>Date</th>
+                                    <th>Attendees</th>
+                                    <th>Occupancy</th>
+                                </tr>
+                            </thead>
+                            <tbody id="occupancyTableBody">
+                                <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No data</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PAGE 7: BULK TICKETS ===== -->
+            <div class="admin-page" id="page-bulk">
+                <div class="top-bar">
+                    <h1>Bulk Ticket Generation</h1>
+                    <div class="badge">🎫 PL/SQL Package</div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>Generate Tickets in Bulk</h3>
+                        <span class="tag">Package Procedure</span>
+                    </div>
+                    <form id="bulkTicketForm" class="admin-form">
+                        <div class="form-group">
+                            <label>Event</label>
+                            <select id="bulkEventSelect" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ticket Type</label>
+                            <select id="bulkTicketType" required>
+                                <option value="VIP">VIP</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Standard">Standard</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Price per Ticket (PKR)</label>
+                            <input type="number" id="bulkTicketPrice" required min="100" value="2000">
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input type="number" id="bulkQuantity" required min="1" max="1000" value="50">
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" class="btn-primary">🎫 Generate Bulk Tickets</button>
+                        </div>
+                    </form>
+                    <div id="bulkTicketMessage" class="msg-toast"></div>
+                </div>
+            </div>
+
+            <!-- ===== PAGE 8: PARTICIPANT LOOKUP ===== -->
+            <div class="admin-page" id="page-lookup">
+                <div class="top-bar">
+                    <h1>Participant Lookup</h1>
+                    <div class="badge">🔍 Detailed Ticket Info</div>
+                </div>
+
+                <!-- Participant Directory -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>Participant Directory</h3>
+                        <span class="tag">Quick Reference</span>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="participantDirectoryBody">
+                            <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Search Box -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>Search by Participant ID</h3>
+                        <span class="tag">PL/SQL Function</span>
+                    </div>
+                    <div class="lookup-row">
+                        <div class="form-group">
+                            <label>Participant ID</label>
+                            <input type="number" id="participantCheckId" placeholder="Enter Participant ID">
+                        </div>
+                        <button type="button" class="btn-primary" onclick="checkParticipantTickets()" style="margin-bottom:0;">🔍 Search</button>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div id="participantTicketsResult" style="display:none;">
+                        <!-- Participant Info -->
+                        <div class="analytics-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 20px;">
+                            <div class="analytics-item">
+                                <div class="metric-label">Name</div>
+                                <div class="metric-value" id="participantResultName" style="font-size:18px;">—</div>
+                            </div>
+                            <div class="analytics-item">
+                                <div class="metric-label">Email</div>
+                                <div class="metric-value" id="participantResultEmail" style="font-size:14px; word-break:break-all;">—</div>
+                            </div>
+                            <div class="analytics-item">
+                                <div class="metric-label">Total Tickets</div>
+                                <div class="metric-value pink" id="ticketCountResult">—</div>
+                            </div>
+                        </div>
+
+                        <!-- Ticket Details Table -->
+                        <h4 style="margin-bottom: 12px; color: var(--text-secondary);">📋 Booking Details</h4>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticket #</th>
+                                    <th>Event</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Venue</th>
+                                    <th>City</th>
+                                    <th>Type</th>
+                                    <th>Price</th>
+                                    <th>Booked On</th>
+                                </tr>
+                            </thead>
+                            <tbody id="participantTicketDetailsBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
